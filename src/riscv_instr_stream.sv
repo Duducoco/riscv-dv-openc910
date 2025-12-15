@@ -270,16 +270,10 @@ class riscv_rand_instr_stream extends riscv_instr_stream;
         if (has_rd) {
           rd != reserved_rd[i];
         }
-        if (format == CB_FORMAT) {
-          rs1 != reserved_rd[i];
-        }
       }
       foreach (cfg.reserved_regs[i]) {
         if (has_rd) {
           rd != cfg.reserved_regs[i];
-        }
-        if (format == CB_FORMAT) {
-          rs1 != cfg.reserved_regs[i];
         }
       }
       // TODO: Add constraint for CSR, floating point register
