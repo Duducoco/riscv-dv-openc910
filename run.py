@@ -412,7 +412,7 @@ def gen(test_list, argv, output_dir, cwd):
                     argv.verbose, check_return_code, argv.debug, argv.target)
 
 
-def gcc_compile(test_list, output_dir, isa, mabi, opts, debug_cmd):
+def gcc_compile(test_list, output_dir, isa, mabi, opts, setting_dir, debug_cmd):
     """Use riscv gcc toolchain to compile the assembly program
 
     Args:
@@ -420,6 +420,7 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, debug_cmd):
       output_dir : Output directory of the ELF files
       isa        : ISA variant passed to GCC
       mabi       : MABI variant passed to GCC
+      setting_dir: Target directory containing target-specific assembly includes
       debug_cmd  : Produce the debug cmd log without running
     """
     cwd = os.path.dirname(os.path.realpath(__file__))
@@ -439,10 +440,10 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, debug_cmd):
             cmd = ("{} -static -mcmodel=medany \
              -fvisibility=hidden -nostdlib \
              -nostartfiles {} \
-             -I{}/user_extension \
+             -I{} -I{}/user_extension \
              -T{}/scripts/link.ld {} -o {} ".format(
-                get_env_var("RISCV_GCC", debug_cmd=debug_cmd), asm, cwd,
-                cwd, opts, elf))
+                get_env_var("RISCV_GCC", debug_cmd=debug_cmd), asm,
+                setting_dir, cwd, cwd, opts, elf))
             if 'gcc_opts' in test:
                 cmd += test['gcc_opts']
             if 'gen_opts' in test:
@@ -1156,7 +1157,7 @@ def main():
             # Compile the assembly program to ELF, convert to plain binary
             if args.steps == "all" or re.match(".*gcc_compile.*", args.steps):
                 gcc_compile(matched_list, output_dir, args.isa, args.mabi,
-                            args.gcc_opts, args.debug)
+                            args.gcc_opts, args.core_setting_dir, args.debug)
 
             # Run ISS simulation
             if args.steps == "all" or re.match(".*iss_sim.*", args.steps):
