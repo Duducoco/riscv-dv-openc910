@@ -55,6 +55,14 @@ class CheckGeneratedAssemblyTest(unittest.TestCase):
         self.assertEqual(enum_names, expected)
         self.assertEqual(registry_names, expected)
 
+    def test_memory_test_enables_floating_point_state(self):
+        root = Path(__file__).resolve().parents[2]
+        testlist = (root / "target/c910/testlist.yaml").read_text()
+        memory_test = testlist.split("- test: c910_xthead_memory_test", 1)[1]
+        memory_test = memory_test.split("- test:", 1)[0]
+
+        self.assertIn("+enable_floating_point=1", memory_test)
+
     def test_counts_consecutive_no_operand_instructions(self):
         assembly = """
           sync

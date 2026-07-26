@@ -8,8 +8,10 @@ This target generates all 101 private instruction families decoded by C910:
 
 The memory directed stream reloads a generated data-page address before every
 private memory instruction. It uses zero offset, step, scale, and pair displacement
-so all memory accesses remain in the allocated page. Cache address operands use
-the same data-page address in machine-mode bare addressing.
+so all memory accesses remain in the allocated page. Its test configuration also
+enables floating-point state before executing the private floating-point memory
+instructions. Cache address operands use the same data-page address in machine-mode
+bare addressing.
 
 Generate the three deterministic tests with VCS and compile them with the Xuantie
 toolchain:
