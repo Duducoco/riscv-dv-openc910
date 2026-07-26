@@ -8,6 +8,7 @@ from check_generated_asm import (
     MEMORY_INSTRUCTIONS,
     SCALAR_INSTRUCTIONS,
     check_assembly,
+    check_bounded_compressed_assembly,
 )
 
 
@@ -35,6 +36,46 @@ EXPECTED_CACHE_SYNC_INSTRUCTIONS = {
 
 
 class CheckGeneratedAssemblyTest(unittest.TestCase):
+    def test_accepts_bounded_compressed_main_program(self):
+        assembly = """
+main:             c.addi a0, 1
+                  add a1, a1, a2
+                  c.xor a3, a4
+                  la x10, test_done
+                  jalr x0, x10, 0
+test_done:
+                  li gp, 1
+                  j write_tohost
+"""
+
+        self.assertEqual(2, check_bounded_compressed_assembly(assembly, minimum=2))
+
+    def test_rejects_control_flow_in_bounded_compressed_main_program(self):
+        assembly = """
+main:             c.addi a0, 1
+                  c.bnez a0, main
+                  la x10, test_done
+                  jalr x0, x10, 0
+test_done:
+                  j write_tohost
+"""
+
+        with self.assertRaisesRegex(ValueError, "control-flow instruction: c.bnez"):
+            check_bounded_compressed_assembly(assembly, minimum=1)
+
+    def test_rejects_memory_access_in_bounded_compressed_main_program(self):
+        assembly = """
+main:             c.addi a0, 1
+                  c.lw a1, 0(a2)
+                  la x10, test_done
+                  jalr x0, x10, 0
+test_done:
+                  j write_tohost
+"""
+
+        with self.assertRaisesRegex(ValueError, "memory instruction: c.lw"):
+            check_bounded_compressed_assembly(assembly, minimum=1)
+
     def test_instruction_manifest_is_complete(self):
         self.assertEqual(set(MEMORY_INSTRUCTIONS), EXPECTED_MEMORY_INSTRUCTIONS)
         self.assertEqual(set(CACHE_SYNC_INSTRUCTIONS), EXPECTED_CACHE_SYNC_INSTRUCTIONS)

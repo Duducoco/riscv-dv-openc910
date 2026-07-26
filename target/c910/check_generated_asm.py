@@ -35,6 +35,36 @@ INSTR_RE = re.compile(
     rf"^[ \t]+({'|'.join(map(re.escape, INSTRUCTIONS))})(?=[ \t]|$)", re.MULTILINE
 )
 EXT_RE = re.compile(r"^\s+extu?\s+\w+,\s*\w+,\s*(\d+),\s*(\d+)\s*$", re.MULTILINE)
+MAIN_RE = re.compile(r"^main:.*?^test_done:", re.MULTILINE | re.DOTALL)
+COMPRESSED_RE = re.compile(
+    r"^[ \t]*(?:[a-zA-Z0-9_.$]+:[ \t]*)?c\.[a-z0-9.]+(?=[ \t]|$)",
+    re.MULTILINE,
+)
+MNEMONIC_RE = re.compile(
+    r"^[ \t]*(?:[a-zA-Z0-9_.$]+:[ \t]*)?([a-z][a-z0-9.]+)(?=[ \t]|$)",
+    re.MULTILINE,
+)
+CONTROL_FLOW_INSTRUCTIONS = frozenset(
+    {
+        "beq", "bne", "blt", "bge", "bltu", "bgeu", "j", "jal", "jalr",
+        "c.beqz", "c.bnez", "c.j", "c.jal", "c.jalr", "c.jr",
+    }
+)
+MEMORY_ACCESS_INSTRUCTIONS = frozenset(
+    {
+        "lb", "lbu", "lh", "lhu", "lw", "lwu", "ld",
+        "sb", "sh", "sw", "sd", "flw", "fld", "fsw", "fsd",
+        "c.lw", "c.ld", "c.sw", "c.sd",
+        "c.lwsp", "c.ldsp", "c.swsp", "c.sdsp",
+        "c.flw", "c.fld", "c.fsw", "c.fsd",
+        "c.flwsp", "c.fldsp", "c.fswsp", "c.fsdsp",
+    }
+)
+TERMINAL_JUMP_RE = re.compile(
+    r"^[ \t]+la[ \t]+(x\d+),[ \t]*test_done[ \t]*$\n"
+    r"^[ \t]+jalr[ \t]+x0,[ \t]*\1,[ \t]*0[ \t]*$",
+    re.MULTILINE,
+)
 
 
 def check_assembly(
@@ -58,15 +88,45 @@ def check_assembly(
     return counts
 
 
+def check_bounded_compressed_assembly(assembly: str, minimum: int = 100) -> int:
+    main_match = MAIN_RE.search(assembly)
+    if main_match is None:
+        raise ValueError("missing main/test_done assembly region")
+
+    main_program = main_match.group()
+    count = len(COMPRESSED_RE.findall(main_program))
+    if count < minimum:
+        raise ValueError(
+            f"insufficient compressed instructions: found {count}, expected {minimum}"
+        )
+
+    bounded_body, terminal_jump_count = TERMINAL_JUMP_RE.subn("", main_program)
+    if terminal_jump_count != 1:
+        raise ValueError("missing bounded jump to test_done")
+
+    for mnemonic in MNEMONIC_RE.findall(bounded_body):
+        if mnemonic in CONTROL_FLOW_INSTRUCTIONS:
+            raise ValueError(f"unexpected control-flow instruction: {mnemonic}")
+        if mnemonic in MEMORY_ACCESS_INSTRUCTIONS:
+            raise ValueError(f"unexpected memory instruction: {mnemonic}")
+    return count
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Validate a generated C910 assembly test")
     parser.add_argument("assembly", type=Path)
     parser.add_argument(
         "--group",
-        choices=("all", "scalar", "memory", "cache-sync"),
+        choices=("all", "scalar", "memory", "cache-sync", "bounded-compressed"),
         default="all",
     )
     args = parser.parse_args()
+
+    assembly = args.assembly.read_text(encoding="ascii")
+    if args.group == "bounded-compressed":
+        count = check_bounded_compressed_assembly(assembly)
+        print(f"compressed={count}")
+        return
 
     expected = {
         "all": INSTRUCTIONS,
@@ -74,7 +134,7 @@ def main() -> None:
         "memory": MEMORY_INSTRUCTIONS,
         "cache-sync": CACHE_SYNC_INSTRUCTIONS,
     }[args.group]
-    counts = check_assembly(args.assembly.read_text(encoding="ascii"), expected)
+    counts = check_assembly(assembly, expected)
     print(" ".join(f"{name}={count}" for name, count in counts.items()))
 
 
