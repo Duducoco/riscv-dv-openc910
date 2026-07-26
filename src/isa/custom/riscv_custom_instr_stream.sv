@@ -35,6 +35,26 @@ class riscv_c910_data_page_instr_stream extends riscv_mem_access_stream;
     return la_instr;
   endfunction : create_base_init
 
+  function void append_memory_instructions(riscv_instr_name_t instr_names[]);
+    foreach (instr_names[i]) begin
+      riscv_custom_instr instr;
+      $cast(instr, riscv_instr::get_instr(instr_names[i]));
+      instr.configure_safe_memory_operands(S0, A0, A1, FA0);
+      instr_list.push_back(create_base_init(S0));
+      instr_list.push_back(instr);
+    end
+  endfunction : append_memory_instructions
+
+  function void append_sync_instructions(riscv_instr_name_t instr_names[]);
+    instr_list.push_back(create_base_init(S0));
+    foreach (instr_names[i]) begin
+      riscv_custom_instr instr;
+      $cast(instr, riscv_instr::get_instr(instr_names[i]));
+      instr.rs1 = S0;
+      instr_list.push_back(instr);
+    end
+  endfunction : append_sync_instructions
+
 endclass : riscv_c910_data_page_instr_stream
 
 
@@ -61,17 +81,85 @@ class riscv_c910_memory_instr_stream extends riscv_c910_data_page_instr_stream;
       THEAD_FSRW, THEAD_FSRD, THEAD_FSURW, THEAD_FSURD
     };
 
-    foreach (memory_instr[i]) begin
-      riscv_custom_instr instr;
-      $cast(instr, riscv_instr::get_instr(memory_instr[i]));
-      instr.configure_safe_memory_operands(S0, A0, A1, FA0);
-      instr_list.push_back(create_base_init(S0));
-      instr_list.push_back(instr);
-    end
+    append_memory_instructions(memory_instr);
     super.post_randomize();
   endfunction : post_randomize
 
 endclass : riscv_c910_memory_instr_stream
+
+
+class riscv_c910_register_offset_memory_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_register_offset_memory_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_LRB, THEAD_LRBU, THEAD_LRH, THEAD_LRHU, THEAD_LRW, THEAD_LRWU, THEAD_LRD,
+      THEAD_SRB, THEAD_SRH, THEAD_SRW, THEAD_SRD,
+      THEAD_LURB, THEAD_LURBU, THEAD_LURH, THEAD_LURHU,
+      THEAD_LURW, THEAD_LURWU, THEAD_LURD,
+      THEAD_SURB, THEAD_SURH, THEAD_SURW, THEAD_SURD
+    };
+    append_memory_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_register_offset_memory_instr_stream
+
+
+class riscv_c910_pair_memory_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_pair_memory_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_LWD, THEAD_LDD, THEAD_LWUD, THEAD_SWD, THEAD_SDD
+    };
+    append_memory_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_pair_memory_instr_stream
+
+
+class riscv_c910_indexed_memory_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_indexed_memory_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_LBIA, THEAD_LBIB, THEAD_LBUIA, THEAD_LBUIB,
+      THEAD_LHIA, THEAD_LHIB, THEAD_LHUIA, THEAD_LHUIB,
+      THEAD_LWIA, THEAD_LWIB, THEAD_LWUIA, THEAD_LWUIB,
+      THEAD_LDIA, THEAD_LDIB,
+      THEAD_SBIA, THEAD_SBIB, THEAD_SHIA, THEAD_SHIB,
+      THEAD_SWIA, THEAD_SWIB, THEAD_SDIA, THEAD_SDIB
+    };
+    append_memory_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_indexed_memory_instr_stream
+
+
+class riscv_c910_floating_memory_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_floating_memory_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_FLRW, THEAD_FLRD, THEAD_FLURW, THEAD_FLURD,
+      THEAD_FSRW, THEAD_FSRD, THEAD_FSURW, THEAD_FSURD
+    };
+    append_memory_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_floating_memory_instr_stream
 
 
 class riscv_c910_cache_sync_instr_stream extends riscv_c910_data_page_instr_stream;
@@ -89,15 +177,75 @@ class riscv_c910_cache_sync_instr_stream extends riscv_c910_data_page_instr_stre
       THEAD_L2CACHE_IALL, THEAD_L2CACHE_CALL, THEAD_L2CACHE_CIALL,
       THEAD_SYNC, THEAD_SYNC_I, THEAD_SYNC_S, THEAD_SYNC_IS
     };
-    instr_list.push_back(create_base_init(S0));
-
-    foreach (cache_sync_instr[i]) begin
-      riscv_custom_instr instr;
-      $cast(instr, riscv_instr::get_instr(cache_sync_instr[i]));
-      instr.rs1 = S0;
-      instr_list.push_back(instr);
-    end
+    append_sync_instructions(cache_sync_instr);
     super.post_randomize();
   endfunction : post_randomize
 
 endclass : riscv_c910_cache_sync_instr_stream
+
+
+class riscv_c910_dcache_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_dcache_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_DCACHE_IALL, THEAD_DCACHE_CALL, THEAD_DCACHE_CIALL,
+      THEAD_DCACHE_ISW, THEAD_DCACHE_CSW, THEAD_DCACHE_CISW,
+      THEAD_DCACHE_IVA, THEAD_DCACHE_CVA, THEAD_DCACHE_CVAL1, THEAD_DCACHE_CIVA,
+      THEAD_DCACHE_IPA, THEAD_DCACHE_CPA, THEAD_DCACHE_CPAL1, THEAD_DCACHE_CIPA
+    };
+    append_sync_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_dcache_instr_stream
+
+
+class riscv_c910_icache_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_icache_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_ICACHE_IALL, THEAD_ICACHE_IALLS, THEAD_ICACHE_IVA, THEAD_ICACHE_IPA
+    };
+    append_sync_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_icache_instr_stream
+
+
+class riscv_c910_l2cache_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_l2cache_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_L2CACHE_IALL, THEAD_L2CACHE_CALL, THEAD_L2CACHE_CIALL
+    };
+    append_sync_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_l2cache_instr_stream
+
+
+class riscv_c910_sync_instr_stream extends riscv_c910_data_page_instr_stream;
+
+  `uvm_object_utils(riscv_c910_sync_instr_stream)
+  `uvm_object_new
+
+  function void post_randomize();
+    riscv_instr_name_t instr_names[] = '{
+      THEAD_SYNC, THEAD_SYNC_I, THEAD_SYNC_S, THEAD_SYNC_IS
+    };
+    append_sync_instructions(instr_names);
+    super.post_randomize();
+  endfunction : post_randomize
+
+endclass : riscv_c910_sync_instr_stream

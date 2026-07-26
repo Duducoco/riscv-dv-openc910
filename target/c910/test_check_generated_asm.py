@@ -63,6 +63,18 @@ class CheckGeneratedAssemblyTest(unittest.TestCase):
 
         self.assertIn("+enable_floating_point=1", memory_test)
 
+    def test_testlist_custom_streams_are_factory_registered(self):
+        root = Path(__file__).resolve().parents[2]
+        testlist = (root / "target/c910/testlist.yaml").read_text()
+        stream_source = (root / "src/isa/custom/riscv_custom_instr_stream.sv").read_text()
+        referenced = set(re.findall(r"\+stream_name_\d+=(riscv_c910_\w+)", testlist))
+        registered = set(
+            re.findall(r"`uvm_object_utils\((riscv_c910_\w+)\)", stream_source)
+        )
+
+        self.assertTrue(referenced)
+        self.assertEqual(set(), referenced - registered)
+
     def test_counts_consecutive_no_operand_instructions(self):
         assembly = """
           sync

@@ -286,7 +286,7 @@
 
 - test: c910_machine_exception_test
   description: Machine-mode illegal instruction and breakpoint trap stimulus
-  coverage_tags: [exception, csr]
+  coverage_tags: [exception, illegal_instruction, csr]
   iterations: 1
   no_iss: 1
   gcc_opts: >
@@ -391,5 +391,781 @@
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
     +stream_name_0=riscv_c910_cache_sync_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_mixed_random_stress_test
+  description: Mixed RV64 integer, compressed, and multiply/divide execution-unit stimulus
+  coverage_tags: [mixed_random, integer, compressed, multiply_divide]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=1500
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32M,RV64M,RV32C,RV64C
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_integer_numeric_corner_test
+  description: Integer arithmetic with zero, all-one, sign-bit, and random operand patterns
+  coverage_tags: [integer, integer_corner, shift, logical, compare]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32M,RV64M
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_int_numeric_corner_stream,40
+  rtl_test: core_base_test
+
+- test: c910_non_compressed_instr_test
+  description: RV64 random stimulus with all compressed instructions disabled
+  coverage_tags: [integer, non_compressed]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=4
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32M,RV64M
+    +disable_compressed_instr=1
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_hint_instr_test
+  description: Legal RV64 and compressed HINT encodings mixed into random execution
+  coverage_tags: [hint, compressed]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=2
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32C,RV64C
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=8
+  rtl_test: core_base_test
+
+- test: c910_jump_call_return_stress_test
+  description: JAL/JALR call-return stacks and back-to-back control transfers
+  coverage_tags: [branch_prediction, jump, call_return]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=6000
+    +num_of_sub_program=12
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32C,RV64C
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_jal_instr,30
+  rtl_test: core_base_test
+
+- test: c910_loop_stress_test
+  description: Nested forward and backward loops with randomized loop bodies
+  coverage_tags: [branch_prediction, loop]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=6000
+    +num_of_sub_program=6
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32C,RV64C
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_loop_instr,50
+  rtl_test: core_base_test
+
+- test: c910_single_load_store_test
+  description: Isolated load/store operations separated by short random instruction sequences
+  coverage_tags: [load_store, single_load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=2
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_single_load_store_instr_stream,50
+  rtl_test: core_base_test
+
+- test: c910_back_to_back_load_store_test
+  description: Dense uninterrupted load/store bursts for LSU queue and cache pressure
+  coverage_tags: [load_store, back_to_back_load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=2
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_load_store_stress_instr_stream,60
+  rtl_test: core_base_test
+
+- test: c910_multi_page_memory_test
+  description: Interleaved accesses across multiple generated data pages
+  coverage_tags: [load_store, multi_page_memory]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=3
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_multi_page_load_store_instr_stream,50
+  rtl_test: core_base_test
+
+- test: c910_memory_region_locality_test
+  description: Repeated narrow and sparse accesses within selected memory regions
+  coverage_tags: [load_store, memory_region]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=3
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_mem_region_stress_test,60
+  rtl_test: core_base_test
+
+- test: c910_lr_sc_test
+  description: Load-reserved/store-conditional sequences with intervening arithmetic
+  coverage_tags: [atomic, lr_sc, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=2
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32A,RV64A
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_lr_sc_instr_stream,70
+  rtl_test: core_base_test
+
+- test: c910_amo_operation_test
+  description: Word and doubleword AMO arithmetic, logical, min/max, and swap operations
+  coverage_tags: [atomic, amo, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=2
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32A,RV64A
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_amo_instr_stream,70
+  rtl_test: core_base_test
+
+- test: c910_single_precision_floating_test
+  description: Single-precision arithmetic, conversion, comparison, and classification stimulus
+  coverage_tags: [floating_point, floating_single]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32F,RV64F
+    +enable_floating_point=1
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_data_page=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_double_precision_floating_test
+  description: Double-precision arithmetic, conversion, comparison, and classification stimulus
+  coverage_tags: [floating_point, floating_double]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=5000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32F,RV64F,RV32D,RV64D
+    +enable_floating_point=1
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_data_page=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_floating_control_flow_test
+  description: Floating-point data flow mixed with loops, calls, and memory traffic
+  coverage_tags: [floating_point, floating_control_flow, branch_prediction]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=6000
+    +num_of_sub_program=6
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I,RV32F,RV64F,RV32D,RV64D
+    +enable_floating_point=1
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +directed_instr_0=riscv_loop_instr,15
+    +directed_instr_1=riscv_jal_instr,15
+    +directed_instr_2=riscv_load_store_rand_instr_stream,20
+  rtl_test: core_base_test
+
+- test: c910_csr_write_stress_test
+  description: Repeated machine CSR read-modify-write and dummy status/interrupt writes
+  coverage_tags: [csr, csr_stress]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV32I,RV64I
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=0
+    +enable_dummy_csr_write=1
+    +randomize_csr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_illegal_csr_exception_test
+  description: Nonexistent and illegal machine CSR accesses with exception recovery
+  coverage_tags: [csr, exception, illegal_csr]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=3000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +march=RV32I,RV64I
+    +no_load_store=1
+    +no_csr_instr=0
+    +enable_illegal_csr_instruction=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_ecall=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_ebreak_exception_test
+  description: Machine-mode EBREAK trap entry and breakpoint exception recovery
+  coverage_tags: [exception, ebreak]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=3000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +march=RV32I,RV64I
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=0
+    +no_ecall=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_misaligned_instruction_test
+  description: Misaligned JALR target exception generation and recovery without C extension
+  coverage_tags: [exception, instruction_misaligned, jump]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=4000
+    +num_of_sub_program=8
+    +boot_mode=m
+    +march=RV32I,RV64I
+    +disable_compressed_instr=1
+    +enable_misaligned_instr=1
+    +no_csr_instr=1
+    +no_ebreak=1
+    +no_ecall=1
+    +no_dret=1
+    +no_wfi=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+  rtl_test: core_base_test
+
+- test: c910_xthead_arithmetic_test
+  description: XThead add-shift, find-first, and multiply-accumulate arithmetic stimulus
+  coverage_tags: [xthead_scalar, xthead_arithmetic]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=2000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +dist_control_mode=1
+    +dist_shift=0
+    +dist_arithmetic=100
+    +dist_logical=0
+  rtl_test: core_base_test
+
+- test: c910_xthead_logical_test
+  description: XThead reverse, extract, conditional move, test, and shift stimulus
+  coverage_tags: [xthead_scalar, xthead_logical, logical, shift]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=2000
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +dist_control_mode=1
+    +dist_shift=40
+    +dist_arithmetic=0
+    +dist_logical=100
+  rtl_test: core_base_test
+
+- test: c910_xthead_register_offset_memory_test
+  description: XThead register-offset and unaligned register-offset load/store families
+  coverage_tags: [xthead_memory, xthead_register_offset, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_register_offset_memory_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_pair_memory_test
+  description: XThead paired word/doubleword load and store families
+  coverage_tags: [xthead_memory, xthead_pair_memory, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_pair_memory_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_indexed_memory_test
+  description: XThead pre/post-increment indexed integer load/store families
+  coverage_tags: [xthead_memory, xthead_indexed_memory, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_indexed_memory_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_floating_memory_test
+  description: XThead floating-point register-offset and unaligned load/store families
+  coverage_tags: [xthead_memory, xthead_fp_memory, floating_point, load_store]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +enable_floating_point=1
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_floating_memory_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_dcache_test
+  description: XThead D-cache invalidate, clean, and clean-invalidate operations by set and address
+  coverage_tags: [cache, dcache]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_dcache_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_icache_test
+  description: XThead I-cache global, shareable, virtual-address, and physical-address invalidation
+  coverage_tags: [cache, icache]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_icache_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_l2cache_test
+  description: XThead L2-cache global invalidate, clean, and clean-invalidate operations
+  coverage_tags: [cache, l2cache]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_l2cache_instr_stream
+    +stream_freq_0=10
+  rtl_test: core_base_test
+
+- test: c910_xthead_sync_only_test
+  description: XThead full, instruction, store, and instruction-store synchronization operations
+  coverage_tags: [synchronization]
+  iterations: 1
+  no_iss: 1
+  gcc_opts: >
+    -march=rv64imafdcxtheadc
+    -mabi=lp64d
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=100
+    +num_of_sub_program=0
+    +boot_mode=m
+    +bare_program_mode=1
+    +march=RV64X
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +no_fence=1
+    +no_ebreak=1
+    +no_dret=1
+    +no_wfi=1
+    +disable_compressed_instr=1
+    +illegal_instr_ratio=0
+    +hint_instr_ratio=0
+    +stream_name_0=riscv_c910_sync_instr_stream
     +stream_freq_0=10
   rtl_test: core_base_test
