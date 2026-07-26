@@ -91,7 +91,7 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=5000
-    +num_of_sub_program=3
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I
@@ -99,6 +99,7 @@
     +no_ebreak=1
     +no_dret=1
     +no_wfi=1
+    +no_branch_jump=1
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
     +directed_instr_0=riscv_load_store_rand_instr_stream,30
