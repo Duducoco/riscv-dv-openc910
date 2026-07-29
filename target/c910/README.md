@@ -37,8 +37,9 @@ done
 ```
 
 The custom target directory is placed first on the assembly include path, so
-the C910-specific `user_init.s` enables `MXSTATUS.THEADISAEE`. To compile a
-previously generated test manually:
+the C910-specific `user_init.s` enables `MXSTATUS.THEADISAEE` and initializes
+`mstatus.FS` for bare-mode floating-point tests. To compile a previously
+generated test manually:
 
 ```bash
 $TOOL_EXTENSION/riscv64-unknown-elf-gcc \

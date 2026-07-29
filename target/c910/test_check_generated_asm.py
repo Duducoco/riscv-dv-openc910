@@ -36,6 +36,12 @@ EXPECTED_CACHE_SYNC_INSTRUCTIONS = {
 
 
 class CheckGeneratedAssemblyTest(unittest.TestCase):
+    def test_user_init_enables_floating_point_state(self):
+        user_init = (Path(__file__).with_name("user_init.s")).read_text()
+
+        self.assertRegex(user_init, r"(?m)^li x5, 0x2000$")
+        self.assertRegex(user_init, r"(?m)^csrs mstatus, x5$")
+
     def test_accepts_bounded_compressed_main_program(self):
         assembly = """
 main:             c.addi a0, 1
