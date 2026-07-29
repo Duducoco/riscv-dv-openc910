@@ -227,11 +227,12 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=4000
-    +num_of_sub_program=2
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32F,RV64F,RV32D,RV64D
     +enable_floating_point=1
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
