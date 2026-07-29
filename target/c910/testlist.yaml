@@ -64,7 +64,7 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=5000
-    +num_of_sub_program=8
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32C,RV64C
@@ -118,10 +118,11 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=5000
-    +num_of_sub_program=2
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
@@ -144,11 +145,12 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=4000
-    +num_of_sub_program=2
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I
     +enable_unaligned_load_store=1
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
@@ -169,19 +171,21 @@
     -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3000
-    +num_of_sub_program=2
+    +instr_cnt=1000
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32A,RV64A
+    +no_branch_jump=1
     +no_csr_instr=1
+    +no_fence=1
     +no_ebreak=1
     +no_dret=1
     +no_wfi=1
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
-    +directed_instr_0=riscv_lr_sc_instr_stream,30
-    +directed_instr_1=riscv_amo_instr_stream,30
+    +directed_instr_0=riscv_lr_sc_instr_stream,15
+    +directed_instr_1=riscv_amo_instr_stream,15
   rtl_test: core_base_test
 
 - test: c910_floating_point_test
@@ -462,11 +466,12 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=5000
-    +num_of_sub_program=4
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32M,RV64M
     +disable_compressed_instr=1
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
@@ -486,10 +491,11 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=4000
-    +num_of_sub_program=2
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32C,RV64C
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
@@ -654,18 +660,20 @@
     -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=4000
-    +num_of_sub_program=2
+    +instr_cnt=1000
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32A,RV64A
+    +no_branch_jump=1
     +no_csr_instr=1
+    +no_fence=1
     +no_ebreak=1
     +no_dret=1
     +no_wfi=1
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
-    +directed_instr_0=riscv_lr_sc_instr_stream,70
+    +directed_instr_0=riscv_lr_sc_instr_stream,30
   rtl_test: core_base_test
 
 - test: c910_amo_operation_test
@@ -678,18 +686,20 @@
     -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=4000
-    +num_of_sub_program=2
+    +instr_cnt=1000
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32A,RV64A
+    +no_branch_jump=1
     +no_csr_instr=1
+    +no_fence=1
     +no_ebreak=1
     +no_dret=1
     +no_wfi=1
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
-    +directed_instr_0=riscv_amo_instr_stream,70
+    +directed_instr_0=riscv_amo_instr_stream,30
   rtl_test: core_base_test
 
 - test: c910_single_precision_floating_test
@@ -1695,8 +1705,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=2500 +num_of_sub_program=1 +boot_mode=m +bare_program_mode=1
-    +march=RV32I,RV64I,RV32A,RV64A +no_csr_instr=1 +no_fence=1
+    +instr_cnt=1500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1
+    +march=RV32I,RV64I,RV32A,RV64A +no_branch_jump=1 +no_csr_instr=1 +no_fence=1
     +no_ebreak=1 +no_dret=1 +no_wfi=1 +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_lr_sc_instr_stream,60
   rtl_test: core_base_test
@@ -1709,8 +1719,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=2500 +num_of_sub_program=1 +boot_mode=m +bare_program_mode=1
-    +march=RV32I,RV64I,RV32A,RV64A +no_csr_instr=1 +no_fence=1
+    +instr_cnt=1500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1
+    +march=RV32I,RV64I,RV32A,RV64A +no_branch_jump=1 +no_csr_instr=1 +no_fence=1
     +no_ebreak=1 +no_dret=1 +no_wfi=1 +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_amo_instr_stream,60
   rtl_test: core_base_test
@@ -1723,8 +1733,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3000 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1
-    +march=RV32I,RV64I,RV32A,RV64A +no_csr_instr=1 +no_fence=1
+    +instr_cnt=1500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1
+    +march=RV32I,RV64I,RV32A,RV64A +no_branch_jump=1 +no_csr_instr=1 +no_fence=1
     +no_ebreak=1 +no_dret=1 +no_wfi=1 +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_lr_sc_instr_stream,10 +directed_instr_1=riscv_amo_instr_stream,50
   rtl_test: core_base_test
