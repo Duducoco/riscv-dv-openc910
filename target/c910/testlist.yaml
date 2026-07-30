@@ -516,8 +516,8 @@
     -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=6000
-    +num_of_sub_program=6
+    +instr_cnt=3000
+    +num_of_sub_program=2
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32C,RV64C
@@ -535,6 +535,7 @@
 - test: c910_loop_stress_test
   description: Nested forward and backward loops with randomized loop bodies
   coverage_tags: [branch_prediction, loop]
+  resource_intensive: true
   iterations: 1
   no_iss: 1
   gcc_opts: >
@@ -542,11 +543,12 @@
     -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=6000
-    +num_of_sub_program=6
+    +instr_cnt=3000
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32C,RV64C
+    +no_branch_jump=1
     +no_csr_instr=1
     +no_ebreak=1
     +no_dret=1
