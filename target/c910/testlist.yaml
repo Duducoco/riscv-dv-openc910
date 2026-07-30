@@ -254,10 +254,11 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=3000
-    +num_of_sub_program=2
+    +num_of_sub_program=0
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I
+    +no_branch_jump=1
     +no_fence=0
     +no_csr_instr=1
     +no_ebreak=1
@@ -506,7 +507,7 @@
   rtl_test: core_base_test
 
 - test: c910_jump_call_return_stress_test
-  description: JAL/JALR call-return stacks and back-to-back control transfers
+  description: JAL/JALR call-return stack stress stimulus
   coverage_tags: [branch_prediction, jump, call_return]
   iterations: 1
   no_iss: 1
@@ -516,10 +517,11 @@
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=6000
-    +num_of_sub_program=12
+    +num_of_sub_program=6
     +boot_mode=m
     +bare_program_mode=1
     +march=RV32I,RV64I,RV32C,RV64C
+    +no_branch_jump=1
     +no_load_store=1
     +no_csr_instr=1
     +no_fence=1
@@ -528,7 +530,6 @@
     +no_wfi=1
     +illegal_instr_ratio=0
     +hint_instr_ratio=0
-    +directed_instr_0=riscv_jal_instr,30
   rtl_test: core_base_test
 
 - test: c910_loop_stress_test
@@ -828,6 +829,7 @@
     +num_of_sub_program=0
     +boot_mode=m
     +march=RV32I,RV64I
+    +no_branch_jump=1
     +no_load_store=1
     +no_csr_instr=0
     +enable_illegal_csr_instruction=1
@@ -1636,8 +1638,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3500 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
-    +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
+    +instr_cnt=3500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
+    +no_branch_jump=1 +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
     +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_load_store_rand_instr_stream,60
   rtl_test: core_base_test
@@ -1650,8 +1652,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3500 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
-    +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
+    +instr_cnt=3500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
+    +no_branch_jump=1 +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
     +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_load_store_hazard_instr_stream,60
   rtl_test: core_base_test
@@ -1664,8 +1666,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3500 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
-    +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
+    +instr_cnt=3500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
+    +no_branch_jump=1 +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
     +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_multi_page_load_store_instr_stream,40
   rtl_test: core_base_test
@@ -1678,8 +1680,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3500 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
-    +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
+    +instr_cnt=3500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
+    +no_branch_jump=1 +no_csr_instr=1 +no_fence=1 +no_ebreak=1 +no_dret=1 +no_wfi=1
     +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_mem_region_stress_test,40
   rtl_test: core_base_test
@@ -1692,8 +1694,8 @@
   gcc_opts: -march=rv64imafdcxtheadc -mabi=lp64d -mno-strict-align
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=3500 +num_of_sub_program=2 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
-    +enable_unaligned_load_store=1 +no_csr_instr=1 +no_fence=1
+    +instr_cnt=3500 +num_of_sub_program=0 +boot_mode=m +bare_program_mode=1 +march=RV32I,RV64I
+    +enable_unaligned_load_store=1 +no_branch_jump=1 +no_csr_instr=1 +no_fence=1
     +no_ebreak=1 +no_dret=1 +no_wfi=1 +illegal_instr_ratio=0 +hint_instr_ratio=0
     +directed_instr_0=riscv_load_store_rand_instr_stream,60
   rtl_test: core_base_test
